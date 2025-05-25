@@ -6,14 +6,14 @@ api_prefix = settings.API_V1_STR or "/api"
 app = FastAPI(
     title=settings.PROJECT_NAME or "Printer API",
     version=settings.VERSION or "1.0.0",
-    openapi_url= f"{api_prefix}/openapi.json",
-    docs_url= f"{api_prefix}/docs",  # Swagger UI
-    redoc_url= f"{api_prefix}/redoc",  # ReDoc
+    openapi_url= f"{api_prefix}/openapi.json" if settings.DEBUG else None,
+    docs_url= f"{api_prefix}/docs" if settings.DEBUG else None,
+    redoc_url= f"{api_prefix}/redoc" if settings.DEBUG else None,
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://SouthWharfPrint.com"], # Set to specific origins in production
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,14 +21,19 @@ app.add_middleware(
 
 @app.get("/", include_in_schema=False)
 async def root():
-    from fastapi.responses import RedirectResponse
-    return RedirectResponse(url="/docs")
+    if settings.DEBUG:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=f"{api_prefix}/docs")
+    return {"message": "Printer API", "environment": settings.ENVIRONMENT}
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
-
+    return {
+        "status": "healthy",
+        "environment": settings.ENVIRONMENT,
+        "debug": settings.DEBUG
+    }
 
 from app.routes.auth import router as auth
 

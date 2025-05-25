@@ -112,7 +112,7 @@ async def get_order_by_search_id(
         raise HTTPException(status_code=404, detail="order not found")
     return order
 
-
+# update order status (only for admin)
 @router.put("/{order_id}/status", response_model=OrderResponse)
 async def update_order_status(
     order_id: str,
@@ -121,7 +121,7 @@ async def update_order_status(
     db: Session = Depends(get_db)
 ):
     
-    order = db.query(Order).filter(Order.id == order_id).first()
+    order = db.query(Order).filter(Order.order_search_id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="order not found")
     
