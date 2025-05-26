@@ -8,7 +8,7 @@ from app.db.session import get_db
 from app.core.security import get_current_user, get_current_user_optional, is_admin
 from app.models.user import User
 from app.models.order import Order
-from app.schemas.order_schema import OrderCreate, OrderResponse, OrderUpdate, OrderResponseForCreate
+from app.schemas.order_schema import OrderCreate, OrderResponse, OrderUpdate, OrderResponseForCreate, OrderListResponse
 
 
 router = APIRouter()
@@ -135,7 +135,7 @@ async def update_order_status(
     return order
 
 # Get all orders (only for admin)
-@router.get("", response_model=List[OrderResponse])
+@router.get("", response_model=OrderListResponse)
 async def get_all_orders(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
@@ -143,5 +143,16 @@ async def get_all_orders(
     db: Session = Depends(get_db)
 ):
   
+    total = db.query(Order).count()
+    
     orders = db.query(Order).offset((page - 1) * size).limit(size).all()
-    return orders
+    
+    total_pages = (total + size - 1) // size
+    
+    return {
+        "orders": orders,
+        "total": total,
+        "page": page,
+        "size": size,
+        "total_pages": total_pages
+    }

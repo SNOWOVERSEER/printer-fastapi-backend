@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, field_validator, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 import pytz
 
@@ -63,4 +63,9 @@ class OrderResponse(OrderBase):
     class Config:
         from_attributes = True
     
-    
+class OrderListResponse(BaseModel):
+    orders: List[OrderResponse]
+    total: int
+    page: int
+    size: int
+    total_pages: int    
