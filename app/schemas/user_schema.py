@@ -46,6 +46,10 @@ class UserUpdate(BaseModel):
     building: Optional[str] = None
     mailbox_number: Optional[str] = None
 
+class PasswordResetRequest(BaseModel):
+    current_password: str
+    new_password: str
+
 class UserInDB(UserBase):
     id: int
     role: str

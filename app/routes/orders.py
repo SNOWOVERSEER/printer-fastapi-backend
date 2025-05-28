@@ -117,7 +117,7 @@ async def get_order_by_search_id(
 async def update_order_status(
     order_id: str,
     status_update: OrderUpdate,
-    _: User = Depends(is_admin),
+    _: bool = Depends(is_admin),
     db: Session = Depends(get_db)
 ):
     
@@ -139,7 +139,7 @@ async def update_order_status(
 async def get_all_orders(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
-    _: User = Depends(is_admin),
+    _: bool = Depends(is_admin),
     db: Session = Depends(get_db)
 ):
   

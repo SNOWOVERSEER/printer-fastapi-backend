@@ -27,7 +27,7 @@ async def update_current_user_info(
 @router.get("/{user_id}", response_model=UserInfoResponseForAdmin)
 async def get_user_info(
     user_id: int,
-    _: User = Depends(is_admin),
+    _: bool = Depends(is_admin),
     user_service: UserService = Depends(get_user_service),
     db: Session = Depends(get_db)
 ):
